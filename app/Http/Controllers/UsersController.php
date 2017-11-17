@@ -40,16 +40,6 @@ class UsersController extends Controller
 
 
 
-    /**
-     * 显示用户信息
-     * @param  User   $user [description]
-     * @return [type]       [description]
-     */
-    public function show(User $user)
-    {	
-    	return view('users.show', compact('user'));
-    }
-
 
 
     /**
@@ -180,6 +170,20 @@ class UsersController extends Controller
         $user->delete();
         session()->flash('success','成功删除用户');
         return back();
+   }
+
+
+   /**
+    *  显示用户的主页微博
+    * @param  User   $user [description]
+    * @return [type]       [description]
+    */
+   public function show(User $user)
+   {
+        $statuses = $user->statuses()
+                         ->orderBy('created_at','desc')
+                         ->paginate(30);
+        return view('users.show',compact('user','statuses'));
    }
 
 
