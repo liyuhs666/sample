@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Models\User;
 use Auth;
+use Mail;
 
 class UsersController extends Controller
 {
@@ -16,7 +17,7 @@ class UsersController extends Controller
     {
         // 目前公开的情报
         $this->middleware('auth',[
-            'except' => ['show','create','store']
+            'except' => ['show','create','store', 'index', 'confirmEmail']
         ]);
 
         // 客人只允许访问登录页面?
@@ -38,12 +39,24 @@ class UsersController extends Controller
     }
 
 
+
+    /**
+     * 显示用户信息
+     * @param  User   $user [description]
+     * @return [type]       [description]
+     */
     public function show(User $user)
     {	
     	return view('users.show', compact('user'));
     }
 
 
+
+    /**
+     * 注册新用户
+     * @param  Request $request [description]
+     * @return [type]           [description]
+     */
     public function store(Request $request)
     {
     	$this->validate($request,[
@@ -58,12 +71,62 @@ class UsersController extends Controller
     			'password' => bcrypt($request->password),
     		]);
 
-        Auth::login($user);
-    	session()->flash('success',"It's a fine day with you around");
-    	return redirect()->route('users.show',[$user]);
+        // 原本直接登录
+        // Auth::login($user);
+    	// session()->flash('success',"It's a fine day with you around");
+    	// return redirect()->route('users.show',[$user]);
+    
+        //现在是发送邮箱验证
+        $this->sendEmailConfirmationTo($user);
+        session()->flash('success', '验证邮件已发送到你的注册邮箱上，请注意查收。');
+        return redirect('/');
     }
 
 
+    /**
+     * 发送激活邮件
+     * @param  [type] $user [description]
+     * @return [type]       [description]
+     */
+    public function sendEmailConfirmationTo($user)
+    {
+        $view = 'emails.confirm';
+        $data = compact('user');
+        $from = 'aufree@yousails.com';
+        $name = 'Aufree';
+        $to = $user->email;
+        $subject = "感谢注册 Sample 应用！请确认你的邮箱。";
+
+        Mail::send($view, $data, function ($message) use ($from, $name, $to, $subject) {
+            $message->from($from, $name)->to($to)->subject($subject);
+        });
+    }
+
+
+    /**
+     * 点击邮件中的链接进行激活
+     * @param  [type] $token [description]
+     * @return [type]        [description]
+     */
+    public function confirmEmail($token)
+    {
+        $user = User::where('activation_token', $token)->firstOrFail();
+
+        $user->activated = true;
+        $user->activation_token = null;
+        $user->save();
+
+        Auth::login($user);
+        session()->flash('success', '恭喜你，激活成功！');
+        return redirect()->route('users.show', [$user]);
+    }
+
+
+    /**
+     * 编辑用户信息
+     * @param  User   $user [description]
+     * @return [type]       [description]
+     */
    public function edit(User $user)
    {
         $this->authorize('update', $user);
@@ -71,6 +134,13 @@ class UsersController extends Controller
    }
 
 
+
+   /**
+    * 更新用户信息
+    * @param  User    $user    [description]
+    * @param  Request $request [description]
+    * @return [type]           [description]
+    */
    public function update(User $user,Request $request)
    {
 
@@ -98,6 +168,12 @@ class UsersController extends Controller
    }
 
 
+
+   /**
+    * 退出登录
+    * @param  User   $user [description]
+    * @return [type]       [description]
+    */
    public function destroy(User $user)
    {
         $this->authorize('destroy', $user);
