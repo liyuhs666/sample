@@ -5,7 +5,8 @@
 <div class="col-md-offset-2 col-md-8">
   <div class="panel panel-default">
     <div class="panel-heading">
-      <h5>更新个人资料</h5>
+      <h4>更新个人资料</h4>
+      <p style="color: #707070;font-size: 12px">用注册邮箱到 <a href="http://gravatar.com/emails" target="_blank">gravatar</a>官网注册一个帐号,即可修改头像</p>
     </div>
       <div class="panel-body">
 
