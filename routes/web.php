@@ -39,3 +39,7 @@ Route::get('/users/{user}/followers', 'UsersController@followers')->name('users.
 
 Route::post('/users/followers/{user}', 'FollowersController@store')->name('followers.store');
 Route::delete('/users/followers/{user}', 'FollowersController@destroy')->name('followers.destroy');
+
+
+//尝试进行数据库操作
+Route::get('/caozuo', 'UsersController@caozuo')->name('users.caozuo');

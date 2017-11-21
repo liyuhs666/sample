@@ -7,6 +7,9 @@
     <div class="panel-heading">
       <h4>更新个人资料</h4>
       <p style="color: #707070;font-size: 12px">用注册邮箱到 <a href="http://gravatar.com/emails" target="_blank">gravatar</a>官网注册一个帐号,即可修改头像</p>
+
+      <a href="{{ route('users.caozuo') }}">尝试修改数据库</a>
+
     </div>
       <div class="panel-body">
 
