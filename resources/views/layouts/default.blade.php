@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>@yield('title', 'Sample App') - Test Heroku</title>
+    <title>@yield('title', 'MicroBlog') - Home</title>
     <link rel="stylesheet" href="/css/app.css">
   </head>
   <body>

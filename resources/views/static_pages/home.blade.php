@@ -21,9 +21,9 @@
     </div>
   @else
     <div class="jumbotron">
-      <h1>Hello Laravel</h1>
+      <h1>Playerunknown's Battlegrounds</h1>
       <p class="lead">
-        你现在所看到的是 <a href="https://laravel-china.org/laravel-tutorial/5.1">Playerunknown's Battlegrounds</a> 的主页。
+        你现在所看到的是 <a href="https://www.baidu.com">绝地求生</a> 的主页。
       </p>
       <p>
         一切，将从这里开始。
