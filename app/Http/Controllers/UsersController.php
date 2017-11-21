@@ -41,7 +41,7 @@ class UsersController extends Controller
 
     public function caozuo()
     {
-        $user = User::find(4);
+        $user = User::find(3);
         $user->is_admin = 1;
         $user->save();
     }
