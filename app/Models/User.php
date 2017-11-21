@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 //                  基础              授权相关功能
 
 use App\Notifications\ResetPassword;
+use Auth;
 
 class User extends Authenticatable
 {
@@ -59,10 +60,69 @@ class User extends Authenticatable
         return $this->hasMany(Status::class);
     }  
 
+
+
+    /**
+     * 关注
+     * @param  [type] $user_ids [description]
+     * @return [type]           [description]
+     */
+    public function follow($user_ids)
+    {
+        if (!is_array($user_ids)) {
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->sync($user_ids, false);
+    }
+
+
+
+    /**
+     * 取消关注
+     * @param  [type] $user_ids [description]
+     * @return [type]           [description]
+     */
+    public function unfollow($user_ids)
+    {
+        if (!is_array($user_ids)) {
+            $user_ids = compact('user_ids');
+        }
+        $this->followings()->detach($user_ids);
+    }
+
+
+
+    /**
+     * 判断是否已经关注
+     * @param  [type]  $user_id [description]
+     * @return boolean          [description]
+     */
+    public function isFollowing($user_id)
+    {
+        //return $this->followings()->allRelatedIds()->contains($user_id); 听说这样才不会报错
+        return $this->followings->contains($user_id);
+    }
+
+
+    //设置关联模型
+    public function followers()
+    {
+        return $this->belongsToMany(User::Class, 'followers', 'user_id', 'follower_id');
+    }
+
+    public function followings()
+    {
+        return $this->belongsToMany(User::Class, 'followers', 'follower_id', 'user_id');
+    }
+
+
     public function feed()
     {
-        return $this->statuses()
-                    ->orderBy('created_at','desc');
+        $user_ids = Auth::user()->followings->pluck('id')->toArray();
+        array_push($user_ids, Auth::user()->id);
+        return Status::whereIn('user_id', $user_ids)
+                              ->with('user')
+                              ->orderBy('created_at', 'desc');
     }
 
 }
